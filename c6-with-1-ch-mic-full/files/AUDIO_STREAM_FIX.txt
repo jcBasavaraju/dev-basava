@@ -1,0 +1,23 @@
+AUDIO STREAM FIX
+
+Replace OutputStream with:
+
+self._out = sd.OutputStream(
+    samplerate=SAMPLE_RATE,
+    channels=1,
+    dtype="float32",
+    callback=self._out_cb,
+    blocksize=1024,
+    latency='high'
+)
+
+Replace InputStream with:
+
+self._inp = sd.InputStream(
+    samplerate=SAMPLE_RATE,
+    channels=4,
+    dtype="float32",
+    callback=self._inp_cb,
+    blocksize=1024,
+    latency='high'
+)

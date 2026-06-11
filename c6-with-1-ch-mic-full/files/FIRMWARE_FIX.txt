@@ -1,0 +1,22 @@
+IMPORTANT FIRMWARE FIX
+
+Inside mic_tester_firmware.ino
+
+Find:
+
+sendStatus("PLAY_TONE");
+
+Replace with:
+
+sendStatus("PLAY_TONE");
+delay(5000);
+sendStatus("RECORDING");
+
+This allows the tone to play continuously for 5 seconds
+before FFT recording starts.
+
+Without this delay:
+- tone plays once
+- ESP32 records too early
+- FFT becomes unstable
+- test fails

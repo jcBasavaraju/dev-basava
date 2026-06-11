@@ -1,0 +1,64 @@
+FINAL IMMEDIATE-FAIL FIX
+
+ROOT CAUSE:
+Firmware starts FFT too early before microphone stabilizes.
+
+REQUIRED FIXES:
+
+1) Add warmup delay after PLAY_TONE
+
+Replace firmware sequence with:
+
+sendStatus("PLAY_TONE");
+
+// speaker stabilization
+unsigned long warmupStart = millis();
+while (millis() - warmupStart < 5000) {
+    delay(10);
+}
+
+sendStatus("RECORDING");
+
+// microphone settling
+unsigned long settleStart = millis();
+while (millis() - settleStart < 1500) {
+    delay(10);
+}
+
+// NOW begin FFT capture
+
+2) Increase Python timeout
+
+Replace:
+
+TIMEOUT_SEC = 20
+
+with:
+
+TIMEOUT_SEC = 40
+
+3) Reduce false FAIL threshold
+
+Replace:
+
+if (snr >= 20)
+
+with:
+
+if (snr >= 12)
+
+4) Continuous audio stream fix
+
+Use:
+
+blocksize=1024
+latency='high'
+
+for BOTH OutputStream and InputStream.
+
+RESULT:
+- tone keeps playing continuously
+- ESP32 waits before FFT
+- microphone stabilizes
+- FFT becomes accurate
+- no instant FAIL
